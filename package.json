@@ -1,0 +1,21 @@
+{
+  "name": "account-book-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsrho1023/account-book-server.git"
+  },
+  "author": "Jason",
+  "bugs": {
+    "url": "https://github.com/jsrho1023/account-book-server/issues"
+  },
+  "homepage": "https://github.com/jsrho1023/account-book-server#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
