@@ -1,9 +1,13 @@
-var express = require('express');
-var parser = require('body-parser')
-var app = express();
+require('dotenv').config()
 
-var router = require('./routers')(app);
+const express = require('express')
+const parser = require('body-parser')
+const app = express();
 
-app.listen(3000, function () {
-  console.log('API server is listening on port 3000');
+const port = process.env.PORT || 4500
+
+const router = require('./routers')(app)
+
+app.listen(port, function () {
+  console.log(`API server is listening on port ${port}`)
 });
