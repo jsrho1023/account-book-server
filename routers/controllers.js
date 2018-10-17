@@ -9,7 +9,7 @@ controllers.expense = {
     },
 
     addDailyExpense: function (req, res) {
-        dailyExpenseService.addDailyExpense(req.query.date, req.body.consumption)
+        dailyExpenseService.addDailyExpense(req.query.date, req.body.consumptions)
             .then((result) => {
                 res.status(200).send(result);
             })
