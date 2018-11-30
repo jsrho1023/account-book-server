@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --recursive --exit"
+    "test": "./node_modules/.bin/mocha --recursive --exit",
+    "debug": "./node_modules/.bin/mocha --recursive --inspect-brk"
   },
   "repository": {
     "type": "git",

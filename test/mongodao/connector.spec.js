@@ -7,9 +7,9 @@ describe('MongoClient should', () => {
         let url = 'mongodb://localhost:27017';
 
         // Database Name
-        let dbName = 'account-book';
+        let dbName = 'test';
 
-        let db = await connector.initDatabase(url, dbName)
+        let db = await connector.initDatabase(url, dbName);
         assert.equal(db.databaseName, dbName);
         connector.closeConnection();
     }).timeout(15000);

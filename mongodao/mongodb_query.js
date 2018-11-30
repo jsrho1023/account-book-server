@@ -2,7 +2,7 @@ let queryTasks = {};
 
 queryTasks.retrieveAll = function (db, collectionName) {
     return new Promise(function (resolve, reject) {
-        // get the documents collection
+        // get the documents collection        
         const collection = db.collection(collectionName);
         // find all documents
         collection.find().toArray(function (err, items) {
