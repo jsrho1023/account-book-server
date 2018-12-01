@@ -1,24 +1,24 @@
 const MongoClient = require('mongodb').MongoClient;
 
-let mongoConnector = {};
-let mongoClient;
+class MongoConnector {
+    constructor(url) {
+        this.url = url;
+    }
 
-mongoConnector.initDatabase = async function (url, dbName) {
-    const database = await MongoClient.connect(url, { useNewUrlParser: true })
-        .then((client) => {
-            mongoClient = client;
-            return client.db(dbName);
-        })
-        .catch((reason) => {
-            console.error("failed to connect mongod:" + reason)
-            return null; 
-        });
+    initDatabase(dbName) {
+        return MongoClient.connect(this.url, { useNewUrlParser: true })
+            .then((client) => {
+                this.mongoClient = client;                
+                return this.mongoClient.db(dbName);
+            })
+            .catch((reason) => {
+                console.error("failed to connect mongod:" + reason)
+            });
+    }
 
-    return database;
+    closeConnection() {
+        return this.mongoClient.close(true);
+    }
 }
 
-mongoConnector.closeConnection = function () {
-    mongoClient.close(true);
-}
-
-module.exports = mongoConnector;
+module.exports = MongoConnector;

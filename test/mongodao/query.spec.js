@@ -1,8 +1,9 @@
-const connector = require('../../mongodao/mongodb_connector');
+const MongoConnector = require('../../mongodao/mongodb_connector');
 const MongoQuery = require('../../mongodao/mongodb_query');
 const assert = require('assert');
 
 describe('query should', () => {
+    let connector;
     let mongoQuery;
     let date;
 
@@ -12,13 +13,14 @@ describe('query should', () => {
         // Database Name
         let dbName = 'test';
 
-        const mongodb = await connector.initDatabase(url, dbName);
-
-        if(!mongodb) {
-            assert.fail();
-        }
-
-        mongoQuery = new MongoQuery(mongodb);
+        connector = new MongoConnector(url);
+        await connector.initDatabase(dbName)
+            .then((db)=>{
+                if(!db){
+                    assert.fail();
+                }
+                mongoQuery = new MongoQuery(db);
+            });
 
         const dateObject = new Date();
         date = [
