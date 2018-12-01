@@ -1,9 +1,8 @@
-const controllers = require('./controllers')
+module.exports = function(app, expenseController){
+  
+  app.get('/api/expense/day/:date', expenseController.getDailyExpense)
 
-module.exports = function(app){
-  app.get('/api/expense/day/:date', controllers.expense.getDailyExpense)
-
-  app.post('/api/expense/day/:date', controllers.expense.addDailyExpense)
+  app.post('/api/expense/day/:date', expenseController.addDailyExpense)
   
   app.get('/api', function (req, res) {
     res.send('Account Book APIs!')

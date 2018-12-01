@@ -1,26 +1,30 @@
-const mongoQuery = require('../mongodao/mongodb_query');
+class DailyExpense {
+    constructor(mongoQuery){
+        this.query = mongoQuery;
+        this.collectionName = 'daily-expense';
+    }
 
-let daily_expense = {};
-
-const collectionName = 'daily-expense';
-
-daily_expense = {    
-    getExpense: async function (mongoDB, date) {
-        return await mongoQuery.findOneDoc(mongoDB, collectionName, {'datetime': date})
+    async getExpense (date) {
+        return await this.query.findOneDoc(this.collectionName, {'datetime': date})
             .then((doc) => {
                 if(!doc){                    
                     doc = { 'datetime': date, 'consumptions': []};    
                 }
                 return doc;
             }).catch((reason) => {
-                console.log(reason);
+                console.error(reason);
             });
-    },
-    addDailyExpense: async function (mongoDB, date, consumption) {
-        let document = await daily_expense.getExpense(mongoDB, date);
-        document.consumptions = [...document.consumptions, consumption];
-        return mongoQuery.insertOne(mongoDB, collectionName, document);
     }
+
+    async addDailyExpense (date, consumption) {
+        let document = await this.getExpense(date);
+        document.consumptions = [...document.consumptions, ...consumption];
+        return this.query.insertOne(this.collectionName, document);
+    }
+
+    async deleteExpense (date){
+        return await this.query.deleteOne(this.collectionName, {'datetime': date});
+    };
 }
 
-module.exports = daily_expense;
+module.exports = DailyExpense;

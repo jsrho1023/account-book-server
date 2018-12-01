@@ -1,10 +1,10 @@
 const connector = require('../../mongodao/mongodb_connector');
-const query = require('../../mongodao/mongodb_query');
+const MongoQuery = require('../../mongodao/mongodb_query');
 const assert = require('assert');
 
 describe('query should', () => {
-    let mongodb;
-    let date
+    let mongoQuery;
+    let date;
 
     before(async () => {
         // Connection URL
@@ -12,11 +12,13 @@ describe('query should', () => {
         // Database Name
         let dbName = 'test';
 
-        mongodb = await connector.initDatabase(url, dbName);
+        const mongodb = await connector.initDatabase(url, dbName);
 
         if(!mongodb) {
             assert.fail();
         }
+
+        mongoQuery = new MongoQuery(mongodb);
 
         const dateObject = new Date();
         date = [
@@ -26,7 +28,7 @@ describe('query should', () => {
     })
 
     it('insert test data', async () => {
-        await query.insertOne(mongodb, 'test', 
+        await mongoQuery.insertOne('test', 
                 { 'datetime': date, 
                   'consumptions': [
                       { 'amount': 1000, 'desc': 'stop wasting' }, 
@@ -39,18 +41,8 @@ describe('query should', () => {
             });
     }).timeout(15000);
 
-    it('retrieve all data', async () => {
-        await query.retrieveAll(mongodb, 'test')
-            .then((items) => {
-                assert.notEqual(items, null);
-            })
-            .catch((error) => {
-                assert.fail(error);
-            })
-    }).timeout(15000);
-
     it('retrieve one data (inserted one)', async () => {
-        await query.findOneDoc(mongodb, 'test', { 'datetime': date })
+        await mongoQuery.findOneDoc('test', { 'datetime': date })
             .then((doc) => {
                 assert.equal(doc.consumptions.length, 2)
             })
@@ -60,7 +52,7 @@ describe('query should', () => {
     }).timeout(15000);
 
     it('retrieve one data (no data)', async () => {
-        await query.findOneDoc(mongodb, 'test', { 'datetime': '2018-01-01' })
+        await mongoQuery.findOneDoc('test', { 'datetime': '2018-01-01' })
             .then((doc) => {
                 assert.equal(doc, null)
             })
@@ -70,7 +62,7 @@ describe('query should', () => {
     }).timeout(15000);
 
     it('remove test data', async () => {
-        await query.deleteOne(mongodb, 'test', { "datetime": date })
+        await mongoQuery.deleteOne('test', { "datetime": date })
             .then((result) => {
                 assert.equal(result.deletedCount, 1);
             })

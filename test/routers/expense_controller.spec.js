@@ -1,29 +1,24 @@
-const mockery = require('mockery');
 const sinon = require('sinon');
 const http_mocks = require('node-mocks-http');
 const should = require('should');
-
-const controller = require('../../routers/controllers');
-const mock_daily_expense = require('../../services/daily_expense');
+const ExpenseController = require('../../routers/expense_controller');
 
 function buildResponse() {
   return http_mocks.createResponse({ eventEmitter: require('events').EventEmitter })
 }
 
 describe('Controller Test', function () {
-
-  before(function () {
-    mockery.enable({
-      warnOnUnregistered: false
-    })
-  })
-
-  after(function () {
-    mockery.disable()
+  let mockDailyExpense;
+  before(()=>{
+    mockDailyExpense = {
+      getExpense: function(){},
+      addDailyExpense: function(){}
+    }    
   })
 
   it('when getDailyExpense called, should call getExpense and return data', function (done) {
-    let getExpenseStub = sinon.stub(mock_daily_expense, 'getExpense').returns({
+
+    let getExpenseStub = sinon.stub(mockDailyExpense, 'getExpense').returns({
       "datetime": "2018-09-01",
       "consumptions": [
         { "amount": 1000, "desc": "stop wasting" },
@@ -49,13 +44,15 @@ describe('Controller Test', function () {
       done();
     })
 
-    controller.expense.getDailyExpense(request, response);
+    const expenseController = new ExpenseController(mockDailyExpense);
+    expenseController.getDailyExpense(request, response);
+
     getExpenseStub.calledOnceWithExactly('20180901');
     getExpenseStub.restore();
   })
 
   it('given DB write success, when addDailyExpense called, should call addDailyExpense and return result', function () {
-    let addDailyExpenseStub = sinon.stub(mock_daily_expense, 'addDailyExpense')
+    let addDailyExpenseStub = sinon.stub(mockDailyExpense, 'addDailyExpense')
       .returns(new Promise((resolve)=>{
         resolve({insertedCount:1})
       }));
@@ -78,13 +75,15 @@ describe('Controller Test', function () {
       done();
     })
 
-    controller.expense.addDailyExpense(request, response);
+    const expenseController = new ExpenseController(mockDailyExpense);
+    expenseController.addDailyExpense(request, response);
+
     addDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
     addDailyExpenseStub.restore();
   })
 
   it('given DB write impossible, when addDailyExpense called, should call addDailyExpense and return error', function () {
-    let addDailyExpenseStub = sinon.stub(mock_daily_expense, 'addDailyExpense')
+    let addDailyExpenseStub = sinon.stub(mockDailyExpense, 'addDailyExpense')
       .returns(new Promise((reject)=>{
         reject({error:'DB error'})
       }));
@@ -107,7 +106,9 @@ describe('Controller Test', function () {
       done();
     })
 
-    controller.expense.addDailyExpense(request, response);
+    const expenseController = new ExpenseController(mockDailyExpense);
+    expenseController.addDailyExpense(request, response);
+    
     addDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
     addDailyExpenseStub.restore();
   })
