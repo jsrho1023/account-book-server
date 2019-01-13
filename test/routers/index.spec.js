@@ -11,7 +11,7 @@ describe('Router Test', function () {
     app = { get: sinon.spy(), post: sinon.spy() }
     mockExpenseController = {
       getDailyExpense: function(){},
-      addDailyExpense: function(){},
+      saveDailyExpense: function(){},
     }
     router(app, mockExpenseController);
   })
@@ -21,7 +21,7 @@ describe('Router Test', function () {
   })
 
   it('post /api/expense/day/:date is registered', function () {
-    assert(app.post.calledWith('/api/expense/day/:date', mockExpenseController.addDailyExpense));
+    assert(app.post.calledWith('/api/expense/day/:date', mockExpenseController.saveDailyExpense));
   })
   
 })

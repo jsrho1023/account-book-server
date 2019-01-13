@@ -12,7 +12,7 @@ describe('Controller Test', function () {
   before(()=>{
     mockDailyExpense = {
       getExpense: function(){},
-      addDailyExpense: function(){}
+      saveDailyExpense: function(){}
     }    
   })
 
@@ -51,8 +51,8 @@ describe('Controller Test', function () {
     getExpenseStub.restore();
   })
 
-  it('given DB write success, when addDailyExpense called, should call addDailyExpense and return result', function () {
-    let addDailyExpenseStub = sinon.stub(mockDailyExpense, 'addDailyExpense')
+  it('given DB write success, when saveDailyExpense called, should call saveDailyExpense and return result', function () {
+    let saveDailyExpenseStub = sinon.stub(mockDailyExpense, 'saveDailyExpense')
       .returns(new Promise((resolve)=>{
         resolve({insertedCount:1})
       }));
@@ -76,14 +76,14 @@ describe('Controller Test', function () {
     })
 
     const expenseController = new ExpenseController(mockDailyExpense);
-    expenseController.addDailyExpense(request, response);
+    expenseController.saveDailyExpense(request, response);
 
-    addDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
-    addDailyExpenseStub.restore();
+    saveDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
+    saveDailyExpenseStub.restore();
   })
 
-  it('given DB write impossible, when addDailyExpense called, should call addDailyExpense and return error', function () {
-    let addDailyExpenseStub = sinon.stub(mockDailyExpense, 'addDailyExpense')
+  it('given DB write impossible, when saveDailyExpense called, should call saveDailyExpense and return error', function () {
+    let saveDailyExpenseStub = sinon.stub(mockDailyExpense, 'saveDailyExpense')
       .returns(new Promise((reject)=>{
         reject({error:'DB error'})
       }));
@@ -107,9 +107,9 @@ describe('Controller Test', function () {
     })
 
     const expenseController = new ExpenseController(mockDailyExpense);
-    expenseController.addDailyExpense(request, response);
+    expenseController.saveDailyExpense(request, response);
     
-    addDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
-    addDailyExpenseStub.restore();
+    saveDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
+    saveDailyExpenseStub.restore();
   })
 })

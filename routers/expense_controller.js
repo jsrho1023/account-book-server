@@ -2,7 +2,7 @@ class ExpenseController{
     constructor(dailyExpenseService){
         this.service = dailyExpenseService;
         this.getDailyExpense = this.getDailyExpense.bind(this);
-        this.addDailyExpense = this.addDailyExpense.bind(this);
+        this.saveDailyExpense = this.saveDailyExpense.bind(this);
     }
 
     async getDailyExpense (req, res) {
@@ -10,8 +10,8 @@ class ExpenseController{
         res.json(data);
     }
 
-    async addDailyExpense (req, res) {
-        await this.service.addDailyExpense(req.params.date, req.body.consumptions)
+    async saveDailyExpense (req, res) {
+        await this.service.saveDailyExpense(req.params.date, req.body.consumptions)
             .then((result) => {
                 res.status(200).send(result);
             })

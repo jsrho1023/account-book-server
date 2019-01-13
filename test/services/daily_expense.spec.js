@@ -19,9 +19,9 @@ describe('dailyExpenseService service shoud', () => {
         })
       },
 
-      insertOne: function () {
+      replaceOne: function () {
         return new Promise((resolve) => {
-          resolve({ insertedCount: 1 });
+          resolve({ nModified: 1 });
         })
       },
 
@@ -35,10 +35,10 @@ describe('dailyExpenseService service shoud', () => {
   })
 
   it('add daily expense of specified date', async () => {
-    await dailyExpenseService.addDailyExpense(date, [{ 'amount': 1000, 'desc': 'test' }])
+    await dailyExpenseService.saveDailyExpense(date, [{ 'amount': 1000, 'desc': 'test' }])
       .then(
         (result) => {
-          assert.equal(result.insertedCount, 1);
+          assert.equal(result.nModified, 1);
         }
       )
   })

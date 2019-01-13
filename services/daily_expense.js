@@ -16,10 +16,10 @@ class DailyExpense {
             });
     }
 
-    async addDailyExpense (date, consumption) {
+    async saveDailyExpense (date, consumption) {
         let document = await this.getExpense(date);
-        document.consumptions = [...document.consumptions, ...consumption];
-        return this.query.insertOne(this.collectionName, document);
+        document.consumptions = [ ...consumption ];
+        return this.query.replaceOne(this.collectionName, document, { datetime: document.datetime }, { upsert: true });
     }
 
     async deleteExpense (date){

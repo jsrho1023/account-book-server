@@ -15,15 +15,23 @@ class MongoQuery {
         // get the documents collection
         const collection = this.db.collection(collectionName);
     
-        // find one document (Promise)
+        // insert one document (Promise)
         return collection.insertOne(document, options);
+    }
+
+    replaceOne(collectionName, document, filter, options) {
+        // get the documents collection
+        const collection = this.db.collection(collectionName);
+    
+        // insert or update one document (Promise)
+        return collection.replaceOne(filter, document, options);
     }
 
     deleteOne(collectionName, selector, options) {
         // get the documents collection
         const collection = this.db.collection(collectionName);
     
-        // find one document (Promise)
+        // delete one document (Promise)
         return collection.deleteOne(selector, options);
     }
 }
