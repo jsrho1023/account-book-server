@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const parser = require('body-parser');
+const cors = require('cors');
 const app = express();
 
 const port = process.env.PORT || 4500;
@@ -13,6 +14,7 @@ const ExpenseController = require('./routers/expense_controller');
 
 const mongoConnector = new MongoConnector(process.env.MONGO_URI);
 
+app.use(cors());
 app.use(parser.json());
 
 mongoConnector.initDatabase(process.env.DATABASE_NAME)

@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jsrho1023/account-book-server#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cors": "^2.8.5",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "mongodb": "^3.1.1"
