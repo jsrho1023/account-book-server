@@ -75,7 +75,7 @@ describe('query should', () => {
                 }
             ).catch((error) => {
                 assert.fail(error);
-            })
+            });
     }).timeout(15000);
 
     it('retrieve one data (inserted one)', async () => {
@@ -106,7 +106,7 @@ describe('query should', () => {
             })
             .catch((error) => {
                 assert.fail(error);
-            })
+            });
     }).timeout(15000);
 
     after(() => {

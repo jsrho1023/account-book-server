@@ -5,25 +5,28 @@ class DailyExpense {
     }
 
     async getExpense (date) {
-        return await this.query.findOneDoc(this.collectionName, {'datetime': date})
-            .then((doc) => {
-                if(!doc){                    
-                    doc = { 'datetime': date, 'consumptions': []};    
-                }
-                return doc;
-            }).catch((reason) => {
-                console.error(reason);
-            });
+        const cursor = this.query.findAll(this.collectionName, {'datetime': date})
+
+        let result = {'datetime': date, 'consumptions': []}
+        
+        while(await cursor.hasNext()){
+            const doc = await cursor.next();
+            result.consumptions.push(doc.consumption);
+        }
+
+        return result;
     }
 
-    async saveDailyExpense (date, consumption) {
-        let document = await this.getExpense(date);
-        document.consumptions = [ ...consumption ];
-        return this.query.replaceOne(this.collectionName, document, { datetime: document.datetime }, { upsert: true });
+    async saveDailyExpense (date, consumptions) {
+        let docs = [];
+        consumptions.forEach(consumption => {
+            docs.push({'datetime': date, 'consumption': consumption})
+        });
+        return await this.query.insertMany(this.collectionName, docs);
     }
 
     async deleteExpense (date){
-        return await this.query.deleteOne(this.collectionName, {'datetime': date});
+        return await this.query.deleteMany(this.collectionName, {'datetime': date});
     };
 }
 

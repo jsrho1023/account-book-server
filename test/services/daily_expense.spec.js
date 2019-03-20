@@ -13,21 +13,33 @@ describe('dailyExpenseService service shoud', () => {
       (dateObject.getDate() > 9 ? '' : '0') + dateObject.getDate()].join('-');
 
     const mongoQuery = {
-      findOneDoc: function () {
+      findAll: function () {
+        return {
+          count: 0,
+          hasNext: function(){
+            if(this.count < 4){
+              return true;
+            }
+            else{
+              return false;
+            }
+          },
+          next: function(){
+            this.count++;
+            return { 'datetime': date, 'consumption': {amount: 1000, desc:'test'} }
+          }
+        }
+      },
+
+      insertMany: function () {
         return new Promise((resolve) => {
-          resolve({ 'datetime': date, 'consumptions': [{ 'amount': 1000, 'desc': 'test1' }, { 'amount': 2000, 'desc': 'test2' }] });
+          resolve({ insertedCount: 2 });
         })
       },
 
-      replaceOne: function () {
+      deleteMany: function () {
         return new Promise((resolve) => {
-          resolve({ nModified: 1 });
-        })
-      },
-
-      deleteOne: function () {
-        return new Promise((resolve) => {
-          resolve({ deletedCount: 1 });
+          resolve({ deletedCount: 2 });
         })
       }
     }
@@ -35,24 +47,24 @@ describe('dailyExpenseService service shoud', () => {
   })
 
   it('add daily expense of specified date', async () => {
-    await dailyExpenseService.saveDailyExpense(date, [{ 'amount': 1000, 'desc': 'test' }])
+    await dailyExpenseService.saveDailyExpense(date, [{ 'amount': 1000, 'desc': 'test1' },{ 'amount': 2000, 'desc': 'test2' }])
       .then(
         (result) => {
-          assert.equal(result.nModified, 1);
+          assert.equal(result.insertedCount, 2);
         }
       )
   })
 
   it('get daily expense of specified date', async () => {
     const document = await dailyExpenseService.getExpense(date);
-    assert.equal(document.consumptions.length, 2);
+    assert.equal(document.consumptions.length, 4);
   })
 
   it('delete expense date of specified date', async () => {
     await dailyExpenseService.deleteExpense(date)
       .then(
         (result) => {
-          assert.equal(result.deletedCount, 1);
+          assert.equal(result.deletedCount, 2);
         }
       )
   })
