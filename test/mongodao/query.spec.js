@@ -15,8 +15,8 @@ describe('query should', () => {
 
         connector = new MongoConnector(url);
         await connector.initDatabase(dbName)
-            .then((db)=>{
-                if(!db){
+            .then((db) => {
+                if (!db) {
                     assert.fail();
                 }
                 mongoQuery = new MongoQuery(db);
@@ -29,12 +29,12 @@ describe('query should', () => {
             (dateObject.getDate() > 9 ? '' : '0') + dateObject.getDate()].join('-');
     })
 
-    it('insert test data', async () => {
-        await mongoQuery.insertOne('test', 
-                { 'datetime': date, 
-                  'consumptions': [
-                      { 'amount': 1000, 'desc': 'stop wasting' }, 
-                      { 'amount': 2000, 'desc': 'I know you did' }] })
+    it('insert one test data', async () => {
+        await mongoQuery.insertOne('test',
+            {
+                'datetime': date,
+                'consumption': { 'amount': 1000, 'desc': 'stop wasting' }
+            })
             .then((result) => {
                 assert.equal(result.insertedCount, 1);
             })
@@ -43,12 +43,48 @@ describe('query should', () => {
             });
     }).timeout(15000);
 
+    it('insert three more test data', async () => {
+        await mongoQuery.insertMany('test', [
+            {
+                'datetime': date,
+                'consumption': { 'amount': 2000, 'desc': 'I know you will' }
+            },
+            {
+                'datetime': date,
+                'consumption': { 'amount': 3000, 'desc': 'again?' }
+            },
+            {
+                'datetime': date,
+                'consumption': { 'amount': 1000, 'desc': 'good enough' }
+            },
+        ])
+            .then((result) => {
+                assert.equal(result.insertedCount, 3);
+            })
+            .catch((error) => {
+                assert.fail(error);
+            });
+    }).timeout(15000);
+
+    it('retrieve all data', async () => {
+        const cursor = mongoQuery.findAll('test', { 'datetime': date });
+        cursor.count()
+            .then(
+                (count) => {
+                    assert.equal(count, 4);
+                }
+            ).catch((error) => {
+                assert.fail(error);
+            })
+    }).timeout(15000);
+
     it('retrieve one data (inserted one)', async () => {
         await mongoQuery.findOneDoc('test', { 'datetime': date })
             .then((doc) => {
-                assert.equal(doc.consumptions.length, 2)
+                assert.equal(doc.consumption.amount, 1000);
+                assert.equal(doc.consumption.desc, 'stop wasting')
             })
-            .catch((error)=>{
+            .catch((error) => {
                 assert.fail(error);
             });
     }).timeout(15000);
@@ -58,15 +94,15 @@ describe('query should', () => {
             .then((doc) => {
                 assert.equal(doc, null)
             })
-            .catch((error)=>{
+            .catch((error) => {
                 assert.fail(error);
             });
     }).timeout(15000);
 
     it('remove test data', async () => {
-        await mongoQuery.deleteOne('test', { "datetime": date })
+        await mongoQuery.deleteAll('test', { "datetime": date })
             .then((result) => {
-                assert.equal(result.deletedCount, 1);
+                assert.equal(result.deletedCount, 4);
             })
             .catch((error) => {
                 assert.fail(error);
