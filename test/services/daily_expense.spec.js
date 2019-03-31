@@ -1,5 +1,6 @@
 const DailyExpenseService = require('../../services/daily_expense');
 const assert = require('assert');
+const moment = require('moment');
 
 describe('dailyExpenseService service shoud', () => {
   let date;
@@ -37,27 +38,27 @@ describe('dailyExpenseService service shoud', () => {
         })
       },
 
-      deleteMany: function () {
+      deleteAll: function () {
         return new Promise((resolve) => {
           resolve({ deletedCount: 2 });
         })
       }
     }
-    dailyExpenseService = new DailyExpenseService(mongoQuery);
+    dailyExpenseService = new DailyExpenseService(mongoQuery, moment);
+  })
+  
+  it('get daily expense of specified date', async () => {
+    const document = await dailyExpenseService.getExpense(date);
+    assert.equal(document.consumptions.length, 4);
   })
 
   it('add daily expense of specified date', async () => {
-    await dailyExpenseService.saveDailyExpense(date, [{ 'amount': 1000, 'desc': 'test1' },{ 'amount': 2000, 'desc': 'test2' }])
+    await dailyExpenseService.saveExpense(date, [{ 'amount': 1000, 'desc': 'test1' },{ 'amount': 2000, 'desc': 'test2' }])
       .then(
         (result) => {
           assert.equal(result.insertedCount, 2);
         }
       )
-  })
-
-  it('get daily expense of specified date', async () => {
-    const document = await dailyExpenseService.getExpense(date);
-    assert.equal(document.consumptions.length, 4);
   })
 
   it('delete expense date of specified date', async () => {

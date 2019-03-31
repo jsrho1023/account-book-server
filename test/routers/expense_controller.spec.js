@@ -12,11 +12,12 @@ describe('Controller Test', function () {
   before(()=>{
     mockDailyExpense = {
       getExpense: function(){},
-      saveDailyExpense: function(){}
+      saveExpense: function(){},
+      deleteExpense: function(){}
     }    
   })
 
-  it('when getDailyExpense called, should call getExpense and return data', function (done) {
+  it('when getDailyExpense called, should call getExpense and return data', (done) => {
 
     let getExpenseStub = sinon.stub(mockDailyExpense, 'getExpense').returns({
       "datetime": "2018-09-01",
@@ -51,8 +52,8 @@ describe('Controller Test', function () {
     getExpenseStub.restore();
   })
 
-  it('given DB write success, when saveDailyExpense called, should call saveDailyExpense and return result', function () {
-    let saveDailyExpenseStub = sinon.stub(mockDailyExpense, 'saveDailyExpense')
+  it('given DB write success, when saveExpense called, should call saveExpense and return result', (done) => {
+    let saveExpenseStub = sinon.stub(mockDailyExpense, 'saveExpense')
       .returns(new Promise((resolve)=>{
         resolve({insertedCount:1})
       }));
@@ -64,12 +65,9 @@ describe('Controller Test', function () {
       body: { consumptions: [{amount:3000, desc:'test'}] }
     });
 
-    response.on('end', function () {
-      should(response._isJSON()).be.exactly(true);
-
-      data = JSON.parse(response._getData());
-
-      should.equal(data.status, 200);
+    response.on('end', function () {      
+      data = response._getData();
+      should.equal(response._getStatusCode(), 200);
       should.equal(data.insertedCount, 1);
 
       done();
@@ -78,13 +76,13 @@ describe('Controller Test', function () {
     const expenseController = new ExpenseController(mockDailyExpense);
     expenseController.saveDailyExpense(request, response);
 
-    saveDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
-    saveDailyExpenseStub.restore();
+    saveExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
+    saveExpenseStub.restore();
   })
 
-  it('given DB write impossible, when saveDailyExpense called, should call saveDailyExpense and return error', function () {
-    let saveDailyExpenseStub = sinon.stub(mockDailyExpense, 'saveDailyExpense')
-      .returns(new Promise((reject)=>{
+  it('given DB write impossible, when saveExpense called, should call saveExpense and return error', function (done) {
+    let saveExpenseStub = sinon.stub(mockDailyExpense, 'saveExpense')
+      .returns(new Promise((_resolve, reject)=>{
         reject({error:'DB error'})
       }));
 
@@ -96,11 +94,8 @@ describe('Controller Test', function () {
     });
 
     response.on('end', function () {
-      should(response._isJSON()).be.exactly(true);
-
-      data = JSON.parse(response._getData());
-
-      should.equal(data.status, 500);
+      data = response._getData();
+      should.equal(response._getStatusCode(), 500);
       should.equal(data.error, 'DB error');
 
       done();
@@ -109,7 +104,34 @@ describe('Controller Test', function () {
     const expenseController = new ExpenseController(mockDailyExpense);
     expenseController.saveDailyExpense(request, response);
     
-    saveDailyExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
-    saveDailyExpenseStub.restore();
+    saveExpenseStub.calledOnceWithExactly('20180901', [{amount:3000, desc:'test'}]);
+    saveExpenseStub.restore();
+  })
+
+  it('when deleteDailyExpense called, then call dailyExpenseService deleteExpense', (done)=>{
+    let deleteExpenseStub = sinon.stub(mockDailyExpense, 'deleteExpense')
+      .returns(new Promise((resolve)=>{
+        resolve({deletedCount:1})
+      }));
+
+    let response = buildResponse()
+    let request = http_mocks.createRequest({
+      method: 'DELETE',
+      url: '/api/expense/day/20190331'
+    });
+
+    response.on('end', function () {
+      data = response._getData();
+      should.equal(response._getStatusCode(), 200);
+      should.equal(data.deletedCount, 1);
+
+      done();
+    })
+
+    const expenseController = new ExpenseController(mockDailyExpense);
+    expenseController.deleteDailyExpense(request, response);
+
+    deleteExpenseStub.calledOnceWithExactly('20190331');
+    deleteExpenseStub.restore();
   })
 })

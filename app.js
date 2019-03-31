@@ -9,6 +9,7 @@ const port = process.env.PORT || 4500;
 
 const MongoConnector = require('./mongodao/mongodb_connector');
 const MongoQuery = require('./mongodao/mongodb_query');
+const Moment = require('moment');
 const DailyExpenseService = require('./services/daily_expense');
 const ExpenseController = require('./routers/expense_controller');
 
@@ -20,8 +21,8 @@ app.use(parser.json());
 mongoConnector.initDatabase(process.env.DATABASE_NAME)
   .then((mongoDB)=>{
     const mongoQuery = new MongoQuery(mongoDB);
-    const dailyExpenseService = new DailyExpenseService(mongoQuery);
-    const expenseController = new ExpenseController(dailyExpenseService);
+    const dailyExpenseService = new DailyExpenseService(mongoQuery, Moment);
+    const expenseController = new ExpenseController(dailyExpenseService, Moment);
 
     const router = require('./routers')(app, expenseController);
 
