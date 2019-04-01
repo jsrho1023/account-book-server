@@ -8,10 +8,11 @@ describe('Router Test', function () {
   let app;
 
   before(function () {
-    app = { get: sinon.spy(), post: sinon.spy() }
+    app = { get: sinon.spy(), post: sinon.spy(), delete: sinon.spy() }
     mockExpenseController = {
       getDailyExpense: function(){},
       saveDailyExpense: function(){},
+      deleteDailyExpense: function(){}
     }
     router(app, mockExpenseController);
   })
@@ -24,4 +25,7 @@ describe('Router Test', function () {
     assert(app.post.calledWith('/api/expense/day/:date', mockExpenseController.saveDailyExpense));
   })
   
+  it('delete /api/expense/day/:date is registered', function () {
+    assert(app.delete.calledWith('/api/expense/day/:date', mockExpenseController.deleteDailyExpense));
+  })
 })

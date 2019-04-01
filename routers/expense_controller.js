@@ -4,6 +4,7 @@ class ExpenseController{
         this.monthlyExpenseService = monthlyExpenseService;
         this.getDailyExpense = this.getDailyExpense.bind(this);
         this.saveDailyExpense = this.saveDailyExpense.bind(this);
+        this.deleteDailyExpense = this.deleteDailyExpense.bind(this);
     }
 
     async getDailyExpense (req, res) {
