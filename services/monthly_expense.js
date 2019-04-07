@@ -7,14 +7,15 @@ class MonthlyExpense {
 
   getMonthlyExpense(startDate){
     const startDatetime = this.datetimeUtil(startDate);
-    const endDatetime = startDatetime.add(1,'months');
+    const endDatetime = this.datetimeUtil(startDate).add(1,'months');
 
     const query = {
       'datetime': {
-        $gte: startDatetime,
-        $lt: endDatetime
+        $gte: startDatetime.valueOf(),
+        $lt: endDatetime.valueOf()
       }
     };
+
     const cursor = this.query.findAll(this.collectionName, query);
     
     return cursor.toArray();

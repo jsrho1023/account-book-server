@@ -11,6 +11,7 @@ const MongoConnector = require('./mongodao/mongodb_connector');
 const MongoQuery = require('./mongodao/mongodb_query');
 const Moment = require('moment');
 const DailyExpenseService = require('./services/daily_expense');
+const MonthlyExpenseService = require('./services/monthly_expense');
 const ExpenseController = require('./routers/expense_controller');
 
 const mongoConnector = new MongoConnector(process.env.MONGO_URI);
@@ -22,7 +23,8 @@ mongoConnector.initDatabase(process.env.DATABASE_NAME)
   .then((mongoDB)=>{
     const mongoQuery = new MongoQuery(mongoDB);
     const dailyExpenseService = new DailyExpenseService(mongoQuery, Moment);
-    const expenseController = new ExpenseController(dailyExpenseService, Moment);
+    const monthlyExpenseService = new MonthlyExpenseService(mongoQuery, Moment);
+    const expenseController = new ExpenseController(dailyExpenseService, monthlyExpenseService);
 
     const router = require('./routers')(app, expenseController);
 
