@@ -34,8 +34,11 @@ class ExpenseController{
     }
 
     async getMonthlyExpense(req, res) {
-        const data = await this.monthlyExpenseService.getMonthlyExpense(req.params.date);
-        res.json(data);
+        const result = await this.monthlyExpenseService.getMonthlyExpense(req.params.date);
+        if(result.error){
+            res.status(500).json(result);
+        }
+        res.status(200).json(result);
     }
 }
 

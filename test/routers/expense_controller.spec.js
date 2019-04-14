@@ -159,7 +159,6 @@ describe('Controller Test', function () {
       });
 
       response.on('end', function () {
-        debugger;
         should(response._isJSON()).be.exactly(true);
 
         data = JSON.parse(response._getData());
